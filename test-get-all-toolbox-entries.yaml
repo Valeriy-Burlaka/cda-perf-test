@@ -1,0 +1,38 @@
+config:
+  target: "{{ $processEnvironment.CONTENTFUL_ENDPOINT }}"
+  phases:
+    - duration: 10
+      arrivalRate: 1
+      rampTo: 5
+      name: Warm up phase
+    - duration: 60
+      arrivalRate: 5
+      rampTo: 10
+      name: Rump up
+    - duration: 120
+      arrivalRate: 10
+      rampTo: 10
+      name: Sustain
+    - duration: 60
+      arrivalRate: 10
+      rampTo: 20
+      name: Rump up more
+    - duration: 60
+      arrivalRate: 20
+      rampTo: 20
+      name: Sustain previous load
+  defaults:
+    headers:
+      Authorization: "Bearer {{ $processEnvironment.CONTENTFUL_ACCESS_TOKEN }}"
+      Cache-Control: "no-cache"
+scenarios:
+  - name: Get all entries using pagination queries
+    flow:
+      - get:
+          url: "/spaces/{{ $processEnvironment.CONTENTFUL_SPACE_ID }}/environments/{{ $processEnvironment.CONTENTFUL_ENVIRONMENT }}/entries?content_type={{ $processEnvironment.CONTENT_TYPE_ID }}&limit=100&skip=0"
+      - get:
+          url: "/spaces/{{ $processEnvironment.CONTENTFUL_SPACE_ID }}/environments/{{ $processEnvironment.CONTENTFUL_ENVIRONMENT }}/entries?content_type={{ $processEnvironment.CONTENT_TYPE_ID }}&limit=100&skip=100"
+      - get:
+          url: "/spaces/{{ $processEnvironment.CONTENTFUL_SPACE_ID }}/environments/{{ $processEnvironment.CONTENTFUL_ENVIRONMENT }}/entries?content_type={{ $processEnvironment.CONTENT_TYPE_ID }}&limit=100&skip=200"
+      - get:
+          url: "/spaces/{{ $processEnvironment.CONTENTFUL_SPACE_ID }}/environments/{{ $processEnvironment.CONTENTFUL_ENVIRONMENT }}/entries?content_type={{ $processEnvironment.CONTENT_TYPE_ID }}&limit=100&skip=300"

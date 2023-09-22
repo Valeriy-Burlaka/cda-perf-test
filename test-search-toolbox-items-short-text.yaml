@@ -1,0 +1,36 @@
+config:
+  target: "{{ $processEnvironment.CONTENTFUL_ENDPOINT }}"
+  phases:
+    - duration: 10
+      arrivalRate: 1
+      rampTo: 5
+      name: Warm up phase
+    - duration: 60
+      arrivalRate: 5
+      rampTo: 10
+      name: Rump up
+    - duration: 120
+      arrivalRate: 10
+      rampTo: 10
+      name: Sustain
+    - duration: 60
+      arrivalRate: 10
+      rampTo: 20
+      name: Rump up more
+    - duration: 60
+      arrivalRate: 20
+      rampTo: 20
+      name: Sustain previous load
+  defaults:
+    headers:
+      Authorization: "Bearer {{ $processEnvironment.CONTENTFUL_ACCESS_TOKEN }}"
+      Cache-Control: "no-cache"
+scenarios:
+  - name: Search for toolbox items containing a specific string in their title
+    flow:
+      - get:
+          url: "/spaces/{{ $processEnvironment.CONTENTFUL_SPACE_ID }}/environments/{{ $processEnvironment.CONTENTFUL_ENVIRONMENT }}/entries?content_type={{ $processEnvironment.CONTENT_TYPE_ID }}&fields.title[match]=crime"
+      - get:
+          url: "/spaces/{{ $processEnvironment.CONTENTFUL_SPACE_ID }}/environments/{{ $processEnvironment.CONTENTFUL_ENVIRONMENT }}/entries?content_type={{ $processEnvironment.CONTENT_TYPE_ID }}&fields.title[match]=DV"
+      - get:
+          url: "/spaces/{{ $processEnvironment.CONTENTFUL_SPACE_ID }}/environments/{{ $processEnvironment.CONTENTFUL_ENVIRONMENT }}/entries?content_type={{ $processEnvironment.CONTENT_TYPE_ID }}&fields.title[match]=domestic violence"
