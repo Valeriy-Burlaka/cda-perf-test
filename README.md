@@ -13,11 +13,13 @@ npm install -g artillery@latest
 
 ## Setup
 
+Run
+
 ```sh
 cp .env.example .env
 ```
 
-and fill out the values for Contentful vars.
+, and then update the values for Contentful vars in the `.env` file.
 
 ## Run
 
